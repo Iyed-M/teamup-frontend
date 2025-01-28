@@ -6,26 +6,27 @@ import { useAuthStore } from "./auth-store";
 type UserStore = {
 	data: User | null;
 	setUserData: (userData: User | null) => void;
-}
+};
 export const useUserStore = create<UserStore>()(
 	devtools(
 		persist(
 			(set) => ({
 				data: null,
 				setUserData: (userData: User | null) =>
-					set((state) => ({ ...state, userData })),
+					set((state) => ({ ...state, data: userData })),
 			}),
 			{
-				name: "userStore",
+				name: "user-store",
 			},
 		),
-		{ name: "userStore" },
+		{ name: "user-store" },
 	),
 );
 export function clearAllUser() {
-	useUserStore.setState({ data: null })
-	useAuthStore.setState({ accessToken: null, refreshToken: null, isRefreshing: false })
+	useUserStore.setState({ data: null });
+	useAuthStore.setState({
+		accessToken: null,
+		refreshToken: null,
+		isRefreshing: false,
+	});
 }
-
-
-

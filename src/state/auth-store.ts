@@ -33,5 +33,3 @@ export const useAuthStore = create<UserAuthState>()(
 		{ name: "authStore" },
 	),
 );
-
-export const useIsLoggedIn = () => !!useAuthStore((s) => s.refreshToken);

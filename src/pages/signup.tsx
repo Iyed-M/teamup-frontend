@@ -1,31 +1,34 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import { useForm } from "react-hook-form";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSignup } from "@/hooks/use-signup";
+import { cn } from "@/lib/utils";
+import { signupRequest } from "@/types/signup";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginRequest, loginRequest } from "@/types/login";
 import { Link } from "@tanstack/react-router";
-import { Form } from "@/components/ui/form";
-import { useLogin } from "@/hooks/use-login";
+import { z } from "zod";
 
-export function Login({ className }: { className: string }) {
-	const form = useForm<LoginRequest>({
-		resolver: zodResolver(loginRequest),
+type SignupRequest = z.infer<typeof signupRequest>;
+export function Signup({ className }: { className: string }) {
+	const form = useForm<SignupRequest>({
+		resolver: zodResolver(signupRequest),
 		defaultValues: {
 			email: "",
 			password: "",
+			username: "",
 		},
 	});
 
-	const { mutate, error, isPending } = useLogin();
+	const { mutate, error, isPending } = useSignup();
 
 	return (
 		<Form {...form}>
 			<form
-				className={cn("flex flex-col gap-6 h-full w-full", className)}
+				className={cn("flex flex-col gap-6  h-full w-full", className)}
 				onSubmit={form.handleSubmit((v) => mutate(v))}
 			>
 				<div className="flex flex-col gap-6">
@@ -38,9 +41,9 @@ export function Login({ className }: { className: string }) {
 						</div>
 						<h1 className="text-xl font-bold">Welcome to Team Up.</h1>
 						<div className="text-center text-sm">
-							Don&apos;t have an account?{" "}
-							<Link to="/signup" className="underline underline-offset-4">
-								Sign up
+							have an account?{" "}
+							<Link to="/login" className="underline underline-offset-4">
+								Login
 							</Link>
 							{error && (
 								<p className="text-sm text-red-500">
@@ -50,6 +53,15 @@ export function Login({ className }: { className: string }) {
 						</div>
 					</div>
 					<div className="flex flex-col gap-6">
+						<div className="grid gap-2">
+							<Label htmlFor="username">Username</Label>
+							<Input id="username" {...form.register("username")} />
+							{form.formState.errors.username && (
+								<p className="text-sm text-red-500">
+									{form.formState.errors.username.message}
+								</p>
+							)}
+						</div>
 						<div className="grid gap-2">
 							{form.formState.errors.root && (
 								<p className="text-sm text-red-500">
