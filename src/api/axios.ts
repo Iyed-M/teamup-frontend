@@ -3,7 +3,7 @@ import axios, {
 	CreateAxiosDefaults,
 	InternalAxiosRequestConfig,
 } from "axios";
-import { refresh } from "./refresh";
+import { logout, refresh } from "./refresh";
 import { useAuthStore } from "@/state/auth-store";
 import { clearAllUser } from "@/state/user-store";
 
@@ -53,9 +53,10 @@ client.interceptors.response.use(
 	},
 	async function (error: AxiosError) {
 		const originalRequest: CustomAxiosRequestConfig | undefined = error.config;
+		console.error(error);
 
 		if (
-			error.response?.status === 401 &&
+			[401, 403].includes(error.response?.status) &&
 			originalRequest &&
 			!originalRequest._user_retry
 		) {
@@ -63,8 +64,7 @@ client.interceptors.response.use(
 			try {
 				const response = await refresh();
 				if (!response) {
-					clearAllUser();
-					window.location.href = "/login";
+					logout();
 					return;
 				}
 				useAuthStore.setState((s) => ({
@@ -77,14 +77,13 @@ client.interceptors.response.use(
 				return client(originalRequest);
 			} catch (error) {
 				if (error instanceof AxiosError && error.response?.status === 403) {
-					clearAllUser();
-					window.location.href = "/login";
+					logout();
 					return;
 				}
 			}
 		}
 
-		//@ts-ignore
+		//@ts-expect-error <backend errors are always the same schema >
 		return Promise.reject(error.response?.data?.error);
 	},
 );

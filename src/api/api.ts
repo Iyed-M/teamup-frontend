@@ -5,7 +5,7 @@ import { client, clientUnauthenticated } from "./axios";
 type APICallPayload<Request, Response> = {
 	method: Method;
 	path: string;
-	requestSchema: z.ZodType<Request>;
+	requestSchema?: z.ZodType<Request>;
 	responseSchema?: z.ZodType<Response>;
 	withToken?: boolean;
 	config?: AxiosRequestConfig;
@@ -20,7 +20,9 @@ export function api<Request, Response>({
 	config,
 }: APICallPayload<Request, Response>): (r: Request) => Promise<Response> {
 	return async (requestData: Request) => {
-		requestSchema.parse(requestData);
+		if (requestSchema) {
+			requestSchema.parse(requestData);
+		}
 
 		const url = path;
 		const data = requestData;

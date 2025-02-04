@@ -9,17 +9,19 @@ export async function refresh() {
 		throw new Error("Already refreshing or no refresh token");
 	}
 	if (!refreshToken) {
-		clearAllUser();
-		window.location.href = "/login";
+		logout();
 	}
 	useAuthStore.setState((s) => ({ ...s, isRefreshing: true }));
 
 	let refreshResponse;
 	try {
-		refreshResponse = await axios.post("refresh", { refreshToken: refreshToken as string });
+		refreshResponse = await axios.post(
+			`${import.meta.env.VITE_API_URL}/refresh`,
+			{},
+			{ headers: { Authorization: `Bearer ${refreshToken}` } },
+		);
 	} catch {
-		clearAllUser();
-		window.location.href = "/login";
+		logout();
 		return;
 	}
 
@@ -30,3 +32,8 @@ export async function refresh() {
 	}));
 	return refreshResponse.data as { accessToken: string };
 }
+
+export const logout = () => {
+	clearAllUser();
+	window.location.href = "/login";
+};
