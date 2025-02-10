@@ -10,7 +10,14 @@ import { AxiosError } from "axios";
 import { ApiErrorResponse } from "./types/apiError";
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const queryClient = new QueryClient();
+const router = createRouter({
+	routeTree,
+	context: {
+		queryClient,
+	},
+	defaultPreload: "intent",
+});
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -25,7 +32,6 @@ declare module "@tanstack/react-query" {
 	}
 }
 
-const queryClient = new QueryClient();
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);

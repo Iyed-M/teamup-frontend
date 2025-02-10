@@ -15,6 +15,7 @@ import { Route as SignupImport } from './routes/signup'
 import { Route as LoginImport } from './routes/login'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as AuthDashboardImport } from './routes/_auth/dashboard'
+import { Route as AuthProjectsProjectIdImport } from './routes/_auth/projects.$projectId'
 
 // Create/Update Routes
 
@@ -38,6 +39,12 @@ const AuthRoute = AuthImport.update({
 const AuthDashboardRoute = AuthDashboardImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthProjectsProjectIdRoute = AuthProjectsProjectIdImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -73,6 +80,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthDashboardImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/projects/$projectId': {
+      id: '/_auth/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof AuthProjectsProjectIdImport
+      parentRoute: typeof AuthImport
+    }
   }
 }
 
@@ -80,10 +94,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteChildren {
   AuthDashboardRoute: typeof AuthDashboardRoute
+  AuthProjectsProjectIdRoute: typeof AuthProjectsProjectIdRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthDashboardRoute: AuthDashboardRoute,
+  AuthProjectsProjectIdRoute: AuthProjectsProjectIdRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -93,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AuthDashboardRoute
+  '/projects/$projectId': typeof AuthProjectsProjectIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -100,6 +117,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AuthDashboardRoute
+  '/projects/$projectId': typeof AuthProjectsProjectIdRoute
 }
 
 export interface FileRoutesById {
@@ -108,14 +126,21 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_auth/dashboard': typeof AuthDashboardRoute
+  '/_auth/projects/$projectId': typeof AuthProjectsProjectIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/signup' | '/dashboard'
+  fullPaths: '' | '/login' | '/signup' | '/dashboard' | '/projects/$projectId'
   fileRoutesByTo: FileRoutesByTo
-  to: '' | '/login' | '/signup' | '/dashboard'
-  id: '__root__' | '/_auth' | '/login' | '/signup' | '/_auth/dashboard'
+  to: '' | '/login' | '/signup' | '/dashboard' | '/projects/$projectId'
+  id:
+    | '__root__'
+    | '/_auth'
+    | '/login'
+    | '/signup'
+    | '/_auth/dashboard'
+    | '/_auth/projects/$projectId'
   fileRoutesById: FileRoutesById
 }
 
@@ -149,7 +174,8 @@ export const routeTree = rootRoute
     "/_auth": {
       "filePath": "_auth.tsx",
       "children": [
-        "/_auth/dashboard"
+        "/_auth/dashboard",
+        "/_auth/projects/$projectId"
       ]
     },
     "/login": {
@@ -160,6 +186,10 @@ export const routeTree = rootRoute
     },
     "/_auth/dashboard": {
       "filePath": "_auth/dashboard.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/projects/$projectId": {
+      "filePath": "_auth/projects.$projectId.tsx",
       "parent": "/_auth"
     }
   }

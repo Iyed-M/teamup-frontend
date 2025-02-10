@@ -13,7 +13,6 @@ export const Route = createFileRoute("/_auth/projects/$projectId")({
 function RouteComponent() {
 	const id = useParams({ from: "/_auth/projects/$projectId" }).projectId;
 	const tasks = useProjectTasks(id);
-	console.log("TASKS", tasks);
 	return tasks.map((t) => (
 		<Card key={t.id}>
 			<CardHeader>{t.id}</CardHeader>
